@@ -1,0 +1,50 @@
+-- mma grammar
+
+comment "//";
+
+separator MusicalLine "\n";
+separator ChordSymbol "";
+separator Chord ';';
+separator MutedInstrument "";
+separator Pitch "";
+
+Mma.Mma := [MusicalLine]
+
+rules MusicalLine ::= Integer [ChordSymbol] '[' String ']' '{' [Chord] '}' '*' Integer
+	| Integer [ChordSymbol] '[' String ']' '{' [Chord] '}'
+	| Integer [ChordSymbol] '[' String ']' '*' Integer
+	| [ChordSymbol] '[' String ']' '{' [Chord] '}' '*' Integer
+	| Integer [ChordSymbol] '[' String ']'
+	| Integer [ChordSymbol] '{' [Chord] '}'
+	| Integer [ChordSymbol] '*' Integer
+	| [ChordSymbol] '[' String ']' '{' [Chord] '}'
+	| [ChordSymbol] '[' String ']' '*' Integer
+	| [ChordSymbol] '{' [Chord] '}' '*' Integer
+	| Integer [ChordSymbol]
+	| [ChordSymbol] '[' String ']'
+	| [ChordSymbol] '{' [Chord] '}'
+	| [ChordSymbol] '*' Integer
+	| [ChordSymbol]
+	| String;
+
+rules ChordSymbol ::= '/'
+	| "z!"
+	| 'z'
+	| Note ChordQuality 'z' [MutedInstrument];
+
+rules Chord ::= Duration [Pitch] '<' Dynamics '>'
+	| Duration [Pitch]
+	| Chord '~'
+	| '~' Chord
+	| "<>";
+
+rules Note ::= 'r' | Tone Accidental;
+rules Duration ::= Integer Dots | Integer Dots '+' Duration
+rules Pitch ::= Note Incr | Note Decr
+
+token ChordQuality ((["abdgijMmnsu()+-&#"] | digit)*);
+token MutedInstrument (["ABCDSW!"]);
+token Dynamics ("mf" | "mp" | 'f'* | 'p'*);
+token Dots ('.'*);
+token Incr ('+'*);
+token Decr ('-'*);
